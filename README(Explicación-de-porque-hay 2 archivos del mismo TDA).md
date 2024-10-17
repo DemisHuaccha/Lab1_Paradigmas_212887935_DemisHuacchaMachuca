@@ -1,1 +1,0 @@
-Se crearon nuevos archivos en github cuando se cambio el nombre de los archivos porque la importacion de estos era impedida por el espacio que hay en estos, pero igual se actualizaran los otros archivos con los cambios
