@@ -7,8 +7,9 @@
 ;(define yellow-piece (piece "yellow"))
 ;(define b0(board))
 ;(define b1 (board-set-play-piece b0 3 red-piece))
-;(define b2 (board-set-play-piece b1 3 yellow-piece)) ;Funciona bien hasta aqui;
-
+;(define b2 (board-set-play-piece b1 3 yellow-piece))
+;(define a (list (list 0 0 "hola" "hola" "adios" "hola") (list 0 0 0 0 "hola" "hola") (list 0 0 0 0 "hola" "hola") (list 0 0 0 0 "hola" "hola") (list 0 0 0 0 "hola" "hola") (list 0 0 "hola" "hola" "hola" "hola"))) 
+;Funciona bien hasta aqui;
 ;--------------------Funcion Constructoras --------------------------;
 
 (provide board)
@@ -152,9 +153,9 @@
 
 (define (colocar-piece column piece posicion posicion-act)                                          ;Recursion de cola
   (cond                                                                                             ;Funcion que coloca un TDA piece en una columna en la posicion dada
-    ((and (null? column) (eq? posicion-act 1)) (list 0 0 0 0 0 piece))                              ;Dominio Columna (list), piece (TDA piece), posicion (int), posicion-act (int)
-    ((and (eq? posicion posicion-act) (null? (cdr column))) piece)                                  ;recorrido list (Columna)
-    ((and (eq? posicion posicion-act) (not (null? (cdr column)))) (cons piece (cdr column)))        
+    ((and (null? column) (eq? posicion-act 1)) (list 0 0 0 0 0 (car piece)))                              ;Dominio Columna (list), piece (TDA piece), posicion (int), posicion-act (int)
+    ((and (eq? posicion posicion-act) (null? (cdr column))) (car piece))                                  ;recorrido list (Columna)
+    ((and (eq? posicion posicion-act) (not (null? (cdr column)))) (cons (car piece) (cdr column)))        
     (else  (cons (car column) (colocar-piece (cdr column) piece posicion (+ posicion-act 1))))
     )
   
@@ -179,7 +180,7 @@
 ;----------------------------------------------------------------------------------------------------------------------------;
 ;-----------------------------------------------Funcion Board-can-play-------------------------------------------------------;
 
-(provide board-can-play)
+(provide board-can-play?)
 
 (define (board-can-play? board)                                 ;Funcion que verfica si existe una posicion libre en el tablero
   (cond                                                        ;Dominio Board
@@ -205,15 +206,36 @@
 ;----------------------------------------------------------------------------------------------------------------------------;
 ;----------------------------------------------Funcion Board-check-vertical-win----------------------------------------------;
 
-;completar despues de TDA-Game;
+(define (repetido4 lst)
+  
+  (define (repetido4aux lst act)                                     ;Funcion repetido4aux es una funcion auxiliar
+    (cond                                                            ;Dominio: una lista y un string
+      ((null? (cdr lst)) 1)                                          ;Recorrido: un int
+      ((eq? (car lst) act) (+ 1 (repetido4aux (cdr lst) act)))       ;Recursion natural
+      (else 0)                                                       ;Funcion que verifica si en una columna existe un dato distinto de 0 que se repita consecutivamente por lo menos 4 veces 
+      )
+    )
 
-;(define (check-column column cont)
-;  
-;  )
-;
-;(define (board-check-vertical-win board)
-;
-;  )
+  (if (null? lst)                                                    ;Funcion repetido4
+      0                                                              ;Dominio: una lista
+      (if (eq? (car lst) 0)                                          ;Recorrido: string o un int (0)
+          (repetido4 (cdr lst))                                      ;Recursion de cola
+          (if (>= (repetido4aux lst (car lst)) 4)                    ;Funcion que verifica que se haya repetido 4 veces por lo menos el primer elemento de la lista hasta que solo un elemento en la lista
+              (car lst)
+              (repetido4 (cdr lst)))
+          )
+      )
+  )
+ 
+  
+
+(define (board-check-vertical-win board)                               ;Funcion board-check-vertical-win 
+  (cond                                                                ;Dominio: un TDA board
+    ((null? board) 0)                                                  ;Recorrido: un string o un int (0)
+    ((string? (repetido4 (getC1 board))) (repetido4 (car board)))      ;Recursion de cola
+    (else (board-check-vertical-win (cdr board)))                      ;
+     )
+  )
 
 ;----------------------------------------------------------------------------------------------------------------------------;
 ;----------------------------------------------Funcion Board-check-horizontal-win----------------------------------------------;
