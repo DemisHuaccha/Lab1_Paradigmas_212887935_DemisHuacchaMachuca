@@ -67,7 +67,7 @@
 
 (define (getF1 Columna)                             ;Funcion get del primer elemento en una columna
   (if (null? Columna)                               ;Dominio Columna( 1 Lista 7 listas vacias)
-      (print "Error: Columna Vacia")                ;Recorrido 1 elemento tipo piece
+      '()                                           ;Recorrido 1 elemento tipo piece
       (car Columna))                                     
   )
 
@@ -75,7 +75,7 @@
 
 (define (getF2 Columna)                             ;Funcion get del segundo elemento en una columna
   (if (null? Columna)                               ;Dominio Columna( 1 Lista 7 listas vacias)
-      (print "Error: Columna Vacia")                ;Recorrido 1 elemento tipo piece
+      '()                                           ;Recorrido 1 elemento tipo piece
       (car (cdr Columna)))
   )
 
@@ -83,7 +83,7 @@
 
 (define (getF3 Columna)                             ;Funcion get del tercer elemento en una columna
   (if (null? Columna)                               ;Dominio Columna( 1 Lista 7 listas vacias)
-      (print "Error: Columna Vacia")                ;Recorrido 1 elemento tipo piece
+      '()                                           ;Recorrido 1 elemento tipo piece
       (car (cdr (cdr Columna))))
   )
 
@@ -91,7 +91,7 @@
 
 (define (getF4 Columna)                             ;Funcion get del cuarto elemento en una columna
   (if (null? Columna)                               ;Dominio Columna( 1 Lista 7 listas vacias)
-      (print "Error: Columna Vacia")                ;Recorrido 1 elemento tipo piece
+      '()                                           ;Recorrido 1 elemento tipo piece
       (car (cdr (cdr (cdr Columna)))))
   )
 
@@ -99,7 +99,7 @@
 
 (define (getF5 Columna)                             ;Funcion get del quinto elemento en una columna
   (if (null? Columna)                               ;Dominio Columna( 1 Lista 7 listas vacias)
-      (print "Error: Columna Vacia")                ;Recorrido 1 elemento tipo piece
+      '()                                           ;Recorrido 1 elemento tipo piece
       (car (cdr (cdr (cdr (cdr Columna))))))        
   )
 
@@ -107,7 +107,7 @@
 
 (define (getF6 Columna)                             ;Funcion get del sexto elemento en una columna
   (if (null? Columna)                               ;Dominio Columna( 1 Lista 7 listas vacias)
-      (print "Error: Columna Vacia")                ;Recorrido 1 elemento tipo piece
+      '()                                           ;Recorrido 1 elemento tipo piece
       (car (cdr (cdr (cdr (cdr (cdr Columna)))))))  
   )
 
@@ -133,6 +133,18 @@
     ((eq? 5 Column) (getC5 Board))
     ((eq? 6 Column) (getC6 Board))
     ((eq? 7 Column) (getC7 Board))
+    (else "Columna inexistente")
+    )
+   )
+
+(define (buscar-getF Fila Board)                             ;Funcion que busca que columna se esta pidiento y la entrega
+  (cond                                                        ;Dominio un int (Column) que es la columna que se pide y un board (Tablero) 
+    ((eq? 1 Fila) (getF1 (getC1 Board)))                            ;Recorrido una Columna (Ques es una lista)
+    ((eq? 2 Fila) (getF2 (getC1 Board)))                            ;Recursion de cola
+    ((eq? 3 Fila) (getF3 (getC1 Board)))
+    ((eq? 4 Fila) (getF4 (getC1 Board)))
+    ((eq? 5 Fila) (getF5 (getC1 Board)))
+    ((eq? 6 Fila) (getF6 (getC1 Board)))
     (else "Columna inexistente")
     )
    )
@@ -232,14 +244,36 @@
 (define (board-check-vertical-win board)                               ;Funcion board-check-vertical-win 
   (cond                                                                ;Dominio: un TDA board
     ((null? board) 0)                                                  ;Recorrido: un string o un int (0)
-    ((string? (repetido4 (getC1 board))) (repetido4 (car board)))      ;Recursion de cola
+    ((string? (repetido4 (getC1 board))) (repetido4 (car board)))      ;Recursion de cola para recorrer tablero, recursion natural para verificar que existan 4 piezas iguiales consecutivas
     (else (board-check-vertical-win (cdr board)))                      ;
      )
   )
 
 ;----------------------------------------------------------------------------------------------------------------------------;
 ;----------------------------------------------Funcion Board-check-horizontal-win----------------------------------------------;
+(define (F board contador)
+    (cond
+      ((null? board) null)
+      ((eq? '() (buscar-getF contador board)) (cons 0 (F (cdr board) contador)))
+      (else (cons (buscar-getF contador board) (F (cdr board) contador)))
+      )
+    )
 
+(define (crearFilas board cont)
+  (cond
+    ((eq? cont 7) null)
+    (else (cons (F board cont) (crearFilas board (+ cont 1))))
+    )
+  )
+
+(define (board-check-horizontal-win board)
+  (define board2 (crearFilas board 1))
+ (cond                                                                  ;Dominio: un TDA board
+    ((null? board2) 0)                                                  ;Recorrido: un string o un int (0)
+    ((string? (repetido4 (getC1 board2))) (repetido4 (car board2)))     ;Recursion de cola para recorrer tablero, recursion natural pata verificar que existan 4 piezas iguales consecutivamente
+    (else (board-check-vertical-win (cdr board2)))                      ;
+     )
+  )
 
 
 ;----------------------------------------------------------------------------------------------------------------------------;
