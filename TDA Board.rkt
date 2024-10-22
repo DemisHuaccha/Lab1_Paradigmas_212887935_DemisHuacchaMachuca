@@ -1,4 +1,5 @@
 #lang racket
+
 (require "TDA-Piece.rkt")
 (require "TDA-Player.rkt")
 ; Ejemplos para probar las funciones 
@@ -7,7 +8,7 @@
 ;(define b0(board))
 ;(define b1 (board-set-play-piece b0 3 red-piece))
 ;(define b2 (board-set-play-piece b1 3 yellow-piece))
-;(define a (list (list 0 0 "hola" "hola" "adios" "hola") (list 0 0 0 0 "hola" "hola") (list 0 0 0 0 "hola" "hola") (list 0 0 0 0 "hola" "hola") (list 0 0 0 0 "hola" "hola") (list 0 0 "hola" "hola" "hola" "hola"))) 
+;(define a (list (list 0 0 "hola" "hola" "adios" "hola")(list 0 0 0 0 "hola" "hola")(list 0 0 0 0 "hola" "hola") (list 0 0 0 0 "hola" "hola") (list 0 0 0 0 "hola" "hola") (list 0 0 0 0 "hola" "hola") (list 0 0 "hola" "hola" "hola" "hola"))) 
 ;Funciona bien hasta aqui;
 ;--------------------Funcion Constructoras --------------------------;
 
@@ -187,6 +188,43 @@
     )
   )
 
+;Funcion que crea todas las diagonales posibles y luego las filtra para entregar solo aquellas que tienen un tamaño mayor a 4
+;Dominio: TDA Board
+;Recorrido: Una lista con las diagonales (lista de listas)
+;Recursion natural
+
+(define (diagonales Board)
+  (define (extraer-diagonal i j delta-i delta-j)                                                  ;delta- y delta-j son para direccionar el loop
+    (define (loop i j acum)                                                                       ;Funcion que crea un loop para generar una diagonal hasta llegar al limite del board 
+      (if (or (< i 0) (>= i (length Board))(< j 0) (>= j (length (list-ref Board i))))   
+          (reverse acum)                                                                          ;Funcion neutra que invierte una lista vacia para no generar cambios en las diagonales  
+          (loop (+ i delta-i) (+ j delta-j) (cons (list-ref (list-ref Board i) j) acum))          ;Llamada recursiva que crea la diagonal.
+          )
+      )
+    (loop i j '())
+    )
+
+  (define (diagonales-en-direccion delta-i delta-j)                                                ;Funcion Diagonales-en-dirrecion funcion cascaron para tener disponibles los datos de dirrecion de las diagonales
+    (define (diagonales-desde j)                                                                   ;Funcion Diagonales-desde 
+      (define (loop2 i j acum2)                                                                    ;Funcion que crea un loop para recorrer el Board en todas las posiciones posibles
+        (if (or (< i 0) (>= i (length Board))(< j 0) (>= j (length (list-ref Board i))))
+            (reverse acum2)                                                                        
+            (loop2 (+ i delta-i) (+ j delta-j)(cons (extraer-diagonal i j delta-i delta-j) acum2))
+            )
+        )
+      (loop2 0 j '()))
+    (apply append (map diagonales-desde (range (length (car Board))))))                            ;Funcion apply, utilizada para unir en una sola lista los elementos (diagonales que son listas) de listas generadas por el loop
+
+  (define todas-diagonales                   ; Funcion que une todas las diagonales obtenidas
+    (append (diagonales-en-direccion 1 -1)  ; Abajo-izquierda
+            (diagonales-en-direccion 1 1)   ; Abajo-derecha
+            (diagonales-en-direccion -1 -1)  ; Arriba-izquierda
+            (diagonales-en-direccion -1 1)))  ; Arriba-derecha
+
+  (filter (lambda (d) (>= (length d) 4)) todas-diagonales)) ;Filtra y entrega todas las diagonales que tienen un tamaño mayor o igual a 4
+
+
+
 
 ;----------------------------------------------------------------------------------------------------------------------------;
 ;-----------------------------------------------Funcion Board-can-play-------------------------------------------------------;
@@ -281,7 +319,26 @@
 ;----------------------------------------------------------------------------------------------------------------------------;
 ;----------------------------------------------Funcion Board-check-diagonal-win----------------------------------------------;
 
+(define (board-check-diagonal-win board)                      ;Funcion que verifica que hay una pieza que se repita por lo menis 4 veces
+  (define (check-diagonales diagonales )                      ;Dominio:TDA board
+    (if (null? diagonales)                                    ;Recorrido: string(temp) 
+        (0)                                                   ;Recursion de cola
+        (if (string? (repetido4 (car diagonales)))            
+            (repetido4 (car diagonales))
+            (check-diagonales (cdr diagonales))
+            )
+        )
+    )
+  (check-diagonales board)
+  )
+  
+
 
 
 ;----------------------------------------------------------------------------------------------------------------------------;
 ;----------------------------------------------Funcion Board-who-is-winner----------------------------------------------;
+
+
+
+
+
