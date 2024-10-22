@@ -208,8 +208,6 @@
 
 (provide board-set-play-piece)
 
-(provide board-set-play-piece)
-
 (define (board-set-play-piece board column piece)
   (if (board-can-play? board)
       (if (number?(buscar-posicion-en-columna (buscar-getC column board) 1))
