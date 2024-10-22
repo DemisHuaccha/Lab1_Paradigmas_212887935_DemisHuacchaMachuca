@@ -1,5 +1,4 @@
 #lang racket
- 
 (require "TDA-Piece.rkt")
 (require "TDA-Player.rkt")
 ; Ejemplos para probar las funciones 
@@ -209,10 +208,15 @@
 
 (provide board-set-play-piece)
 
+(provide board-set-play-piece)
+
 (define (board-set-play-piece board column piece)
   (if (board-can-play? board)
-      (colocar-columna-en-tablero (colocar-piece (buscar-getC column board) piece (buscar-posicion-en-columna (buscar-getC column board) 1) 1) board column 1)
-      (print "No hay mas jugadas posibles"))
+      (if (number?(buscar-posicion-en-columna (buscar-getC column board) 1))
+          (colocar-columna-en-tablero (colocar-piece (buscar-getC column board) piece (buscar-posicion-en-columna (buscar-getC column board) 1) 1) board column 1)
+          (display " No hay mas jugadas posibles en la columna"))
+      (display "No hay mas jugadas posibles en la columna")
+      )
   )
 
 ;----------------------------------------------------------------------------------------------------------------------------;
@@ -283,8 +287,3 @@
 
 ;----------------------------------------------------------------------------------------------------------------------------;
 ;----------------------------------------------Funcion Board-who-is-winner----------------------------------------------;
-
-
-
-
-
