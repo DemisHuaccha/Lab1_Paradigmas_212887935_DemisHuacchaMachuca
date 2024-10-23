@@ -1,11 +1,20 @@
 #lang racket
 
+(require "TDA-Board.rkt")
+(require "TDA-Piece.rkt")
+(require "TDA-Player.rkt")
+
+;----------------------------------------------------------------------------------------------------------------------------;
+;-----------------------------------------------------Funcion constructora---------------------------------------------------;
 
 (provide player)
                                                                      ;Funcion Constructora
 (define (player  id name color wins losses draws remaining-pieces)   ;Dominio 2 string y 5 int: id (int), name(string), color(string), wins(int), losses(int) 
   (list id name color wins losses draws remaining-pieces)            ;draws (int), remaining-pieces(int)
   )                                                                  ;Recorrido una lista que contiene 2 string y 5 enteros en el orden dado en el dominio
+
+;----------------------------------------------------------------------------------------------------------------------------;
+;---------------------------------------------------------Funciones get------------------------------------------------------;
 
 (provide getIdPlayer)
 
@@ -61,5 +70,25 @@
   (if (null? player)                                                 ;Dominio es una lista
       (print "Error: Lista Vacia")                                   ;Recorrido es un int (RemainingPieces)
       (car (cdr (cdr (cdr (cdr (cdr (cdr player))))))))              
-  )                                                                 
+  )
+
+
+;----------------------------------------------------------------------------------;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

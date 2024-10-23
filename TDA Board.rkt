@@ -2,6 +2,7 @@
 
 (require "TDA-Piece.rkt")
 (require "TDA-Player.rkt")
+
 ; Ejemplos para probar las funciones 
 ;(define red-piece (piece "red"))
 ;(define yellow-piece (piece "yellow"))
@@ -244,6 +245,11 @@
 ;----------------------------------------------------------------------------------------------------------------------------;
 ;-----------------------------------------------Funcion Board-set-play-piece-------------------------------------------------;
 
+;Funcion que coloca una pieza en el fondo de la columna selecionada
+;Dominio: TDA Board, int (columna), TDA Piece
+;Recorrido: TDA Board
+;Recursion no aplica
+
 (provide board-set-play-piece)
 
 (define (board-set-play-piece board column piece)
@@ -258,28 +264,30 @@
 ;----------------------------------------------------------------------------------------------------------------------------;
 ;----------------------------------------------Funcion Board-check-vertical-win----------------------------------------------;
 
-(define (repetido4 lst)
+(provide repetido4)
+
+(define (repetido4 columna)
   
-  (define (repetido4aux lst act)                                     ;Funcion repetido4aux es una funcion auxiliar
+  (define (repetido4aux columna act)                                     ;Funcion repetido4aux es una funcion auxiliar
     (cond                                                            ;Dominio: una lista y un string
-      ((null? (cdr lst)) 1)                                          ;Recorrido: un int
-      ((eq? (car lst) act) (+ 1 (repetido4aux (cdr lst) act)))       ;Recursion natural
+      ((null? (cdr columna)) 1)                                          ;Recorrido: un int
+      ((eq? (car columna) act) (+ 1 (repetido4aux (cdr columna) act)))       ;Recursion natural
       (else 0)                                                       ;Funcion que verifica si en una columna existe un dato distinto de 0 que se repita consecutivamente por lo menos 4 veces 
       )
     )
 
-  (if (null? lst)                                                    ;Funcion repetido4
+  (if (null? columna)                                                    ;Funcion repetido4
       0                                                              ;Dominio: una lista
-      (if (eq? (car lst) 0)                                          ;Recorrido: string o un int (0)
-          (repetido4 (cdr lst))                                      ;Recursion de cola
-          (if (>= (repetido4aux lst (car lst)) 4)                    ;Funcion que verifica que se haya repetido 4 veces por lo menos el primer elemento de la lista hasta que solo un elemento en la lista
-              (car lst)
-              (repetido4 (cdr lst)))
+      (if (eq? (car columna) 0)                                          ;Recorrido: string o un int (0)
+          (repetido4 (cdr columna))                                      ;Recursion de cola
+          (if (>= (repetido4aux columna (car columna)) 4)                    ;Funcion que verifica que se haya repetido 4 veces por lo menos el primer elemento de la lista hasta que solo un elemento en la lista
+              (car columna)
+              (repetido4 (cdr columna)))
           )
       )
   )
- 
-  
+
+(provide board-check-vertical-win)
 
 (define (board-check-vertical-win board)                               ;Funcion board-check-vertical-win 
   (cond                                                                ;Dominio: un TDA board
@@ -291,20 +299,25 @@
 
 ;----------------------------------------------------------------------------------------------------------------------------;
 ;----------------------------------------------Funcion Board-check-horizontal-win----------------------------------------------;
-(define (F board contador)
-    (cond
-      ((null? board) null)
-      ((eq? '() (buscar-getF contador board)) (cons 0 (F (cdr board) contador)))
+
+(define (F board contador)                                                             ;Funcion que crear las filas
+    (cond                                                                              ;Dominio: TDA Board y un Int
+      ((null? board) null)                                                             ;Recorrido: lista 
+      ((eq? '() (buscar-getF contador board)) (cons 0 (F (cdr board) contador)))       ;Recursion natural
       (else (cons (buscar-getF contador board) (F (cdr board) contador)))
       )
     )
 
-(define (crearFilas board cont)
-  (cond
-    ((eq? cont 7) null)
-    (else (cons (F board cont) (crearFilas board (+ cont 1))))
+(provide crearFilas)
+
+(define (crearFilas board cont)                                                        ;Funcion que une las filas creadas
+  (cond                                                                                ;Dominio: TDA Board y un Int
+    ((eq? cont 7) null)                                                                ;Recorrido TDA Board, pero hecho con las filas
+    (else (cons (F board cont) (crearFilas board (+ cont 1))))                         ;Recursion natural
     )
   )
+
+(provide board-check-horizontal-win)
 
 (define (board-check-horizontal-win board)
   (define board2 (crearFilas board 1))
@@ -318,6 +331,7 @@
 
 ;----------------------------------------------------------------------------------------------------------------------------;
 ;----------------------------------------------Funcion Board-check-diagonal-win----------------------------------------------;
+(provide board-check-diagonal-win)
 
 (define (board-check-diagonal-win board)                      ;Funcion que verifica que hay una pieza que se repita por lo menis 4 veces
   (define (check-diagonales diagonales )                      ;Dominio:TDA board
@@ -334,11 +348,28 @@
   
 
 
+;----------------------------------------------------------------------------------------------------------------------------;
+;------------------------------------------------Funcion Board-who-is-winner-------------------------------------------------;
+
+(provide board-who-is-winner)
+
+(define (board-who-is-winner board)                                               ;Funcion que verifica si existe una pieza que se repita consecuitavamente por lo menos 4 veces en las dirreciones vertical, horizontal y diagonal
+  (if (not (eq? (board-check-vertical-win board) 0))                              ;Dominio:TDA Board
+      (board-check-vertical-win board)                                            ;Recorrido:int/string(string temporalmente)
+      (if (not (eq? (board-check-horizontal-win board) 0))                        ;Recursion no aplica
+          (board-check-horizontal-win board)
+          (if (not (eq? (board-check-diagonal-win board) 0))
+              (board-check-diagonal-win board)
+              (0)
+              )
+          )
+      )
+  )
+
+  
+
 
 ;----------------------------------------------------------------------------------------------------------------------------;
-;----------------------------------------------Funcion Board-who-is-winner----------------------------------------------;
-
-
 
 
 
