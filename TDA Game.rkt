@@ -1,4 +1,5 @@
 #lang racket
+
 (require "TDA-Piece.rkt")
 (require "TDA-Player.rkt")
 (require "TDA-Board.rkt")
@@ -13,78 +14,41 @@
 ;--------------------------------------------------------------------;
 ;------------------------- Funciones Get ----------------------------;
 
-(define (getGamePlayer1 game)
-  (car game)
-  )
+(define (getGamePlayer1 game)                                   ;Funcion get de player1
+  (car game)                                                    ;Dominio: TDA Game
+  )                                                             ;Recorrido: TDA Player
 
-(define (getGamePlayer2 game)
-  (car (cdr Game))
-  )
+(define (getGamePlayer2 game)                                   ;Funcion get de player2
+  (car (cdr game))                                              ;Dominio: TDA Game
+  )                                                             ;Recorrido: TDA Player
 
-(define (game-get-board game)
-  (car (cdr (cdr game)))
-  )
+(define (gamegetboard game)                                     ;Funcion get de board
+  (car (cdr (cdr game)))                                        ;Dominio: TDA Game
+  )                                                             ;Recorrido: TDA Board
 
-(define (getGameCurrentTurn game)
-  (car (cdr (cdr (cdr game))))
-  )
+(define (getGameCurrentTurn game)                               ;Fincion get de current turn
+  (car (cdr (cdr (cdr game))))                                  ;Dominio: TDA Game
+  )                                                             ;Recorrido: Un Int
 
 ;----------------------------------------------------------------------------------;
 ;------------------------------ Funcion game-is-draw ------------------------------;
 
-(define (game-is-draw game)
-  (if (and (eq? (getRemainingPiecesPlayer (getGamePlayer1 game)) 0) (eq? (getRemainingPiecesPlayer (getGamePlayer2 game)) 0))
-      #t
-      (if (board-can-play (game-get-board game))
+;Funcion 
+;Dominio: TDA Game
+;Recorrido: boolean (#t o #f)
+;Recursion no aplica
+
+(define (game-is-draw? game)                                                                                                         
+  (if (and (eq? (getRemainingPiecesPlayer (getGamePlayer1 game)) 0) (eq? (getRemainingPiecesPlayer (getGamePlayer2 game)) 0))      
+      #t                                                         
+      (if (board-can-play? (game-get-board game))
           #f
           #t
           )
       )
   )
-;----------------------------------------------------------------------------------------;
-;------------------------------ Funcion player-update-stas ------------------------------;
 
-(define (actualizar-wins player)
-  (define (loop player cont)
-    (if (eq? cont 4)
-        (cons (+ (car player) 1) (cdr player))
-        (cons (car player) (loop (cdr player) (+ cont 1)))
-        )
-    )
-  (loop player 1)
-  )
-
-(define (actualizar-losses player)
-  (define (loop player cont)
-    (if (eq? cont 5)
-        (cons (+ (car player) 1) (cdr player))
-        (cons (car player) (loop (cdr player) (+ cont 1)))
-        )
-    )
-  (loop player 1)
-  )
-
-(define (actualizar-draws player)
- (define (loop player cont)
-    (if (eq? cont 6)
-        (cons (+ (car player) 1) (cdr player))
-        (cons (car player) (loop (cdr player) (+ cont 1)))
-        )
-    )
-  (loop player 1)
-  )
-
-(define (player-update-stats player result)
-  (if (eq? result "win")
-      (actualizar-wins player)
-      (if (eq? result "loss")
-          (actualizar-losses player)
-          (actualizar-draws player)
-          )
-      )
-  )
-
-;----------------------------------------------------------------------------------------;
+;--------------------------------------------------------------------------------------------;
 ;------------------------------ Funcion game-get-current-player ------------------------------;
 
 
@@ -100,12 +64,10 @@
 ;----------------------------------------------------------------------------------------;
 ;------------------------------ Funcion game-get-board ------------------------------;
 
-(define (game-get-board game)
-  (display (game-get-board game))
-  )
+(define (game-get-board game)                                     ;Funcion que entrega una representacion del mapa
+  (display (gamegetboard game))                                   ;Dominio: TDA Game
+  )                                                               ;Recorrido: print TDA Board
 
 
 ;----------------------------------------------------------------------------------------;
 ;------------------------------ Funcion game-get-board ------------------------------;
-
-

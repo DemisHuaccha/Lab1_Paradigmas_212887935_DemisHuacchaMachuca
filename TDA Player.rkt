@@ -2,7 +2,7 @@
 
 (require "TDA-Board.rkt")
 (require "TDA-Piece.rkt")
-(require "TDA-Player.rkt")
+(require "TDA-Game.rkt")
 
 ;----------------------------------------------------------------------------------------------------------------------------;
 ;-----------------------------------------------------Funcion constructora---------------------------------------------------;
@@ -73,22 +73,51 @@
   )
 
 
-;----------------------------------------------------------------------------------;
+;----------------------------------------------------------------------------------------;
+;------------------------------ Funcion player-update-stas ------------------------------;
 
+(define (actualizar-wins player)
+  (define (loop player cont)
+    (if (eq? cont 4)
+        (cons (+ (car player) 1) (cdr player))
+        (cons (car player) (loop (cdr player) (+ cont 1)))
+        )
+    )
+  (loop player 1)
+  )
 
+(define (actualizar-losses player)
+  (define (loop player cont)
+    (if (eq? cont 5)
+        (cons (+ (car player) 1) (cdr player))
+        (cons (car player) (loop (cdr player) (+ cont 1)))
+        )
+    )
+  (loop player 1)
+  )
 
+(define (actualizar-draws player)
+ (define (loop player cont)
+    (if (eq? cont 6)
+        (cons (+ (car player) 1) (cdr player))
+        (cons (car player) (loop (cdr player) (+ cont 1)))
+        )
+    )
+  (loop player 1)
+  )
 
+(provide player-update-stats)
 
+(define (player-update-stats player result)
+  (if (eq? result "win")
+      (actualizar-wins player)
+      (if (eq? result "loss")
+          (actualizar-losses player)
+          (actualizar-draws player)
+          )
+      )
+  )
 
-
-
-
-
-
-
-
-
-
-
+;----------------------------------------------------------------------------------------;
 
 
