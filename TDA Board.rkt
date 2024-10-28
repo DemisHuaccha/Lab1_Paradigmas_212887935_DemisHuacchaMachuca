@@ -127,25 +127,25 @@
 
 (define (buscar-getC Column Board)                             ;Funcion que busca que columna se esta pidiento y la entrega
   (cond                                                        ;Dominio un int (Column) que es la columna que se pide y un board (Tablero) 
-    ((eq? 1 Column) (getC1 Board))                             ;Recorrido una Columna (Ques es una lista)
-    ((eq? 2 Column) (getC2 Board))                             ;Recursion de cola
-    ((eq? 3 Column) (getC3 Board))
-    ((eq? 4 Column) (getC4 Board))
-    ((eq? 5 Column) (getC5 Board))
-    ((eq? 6 Column) (getC6 Board))
-    ((eq? 7 Column) (getC7 Board))
+    ((eq? 0 Column) (getC1 Board))                             ;Recorrido una Columna (Ques es una lista)
+    ((eq? 1 Column) (getC2 Board))                             ;Recursion de cola
+    ((eq? 2 Column) (getC3 Board))
+    ((eq? 3 Column) (getC4 Board))
+    ((eq? 4 Column) (getC5 Board))
+    ((eq? 5 Column) (getC6 Board))
+    ((eq? 6 Column) (getC7 Board))
     (else "Columna inexistente")
     )
    )
 
 (define (buscar-getF Fila Board)                             ;Funcion que busca que columna se esta pidiento y la entrega
   (cond                                                        ;Dominio un int (Column) que es la columna que se pide y un board (Tablero) 
-    ((eq? 1 Fila) (getF1 (getC1 Board)))                            ;Recorrido una Columna (Ques es una lista)
-    ((eq? 2 Fila) (getF2 (getC1 Board)))                            ;Recursion de cola
-    ((eq? 3 Fila) (getF3 (getC1 Board)))
-    ((eq? 4 Fila) (getF4 (getC1 Board)))
-    ((eq? 5 Fila) (getF5 (getC1 Board)))
-    ((eq? 6 Fila) (getF6 (getC1 Board)))
+    ((eq? 0 Fila) (getF1 (getC1 Board)))                            ;Recorrido una Columna (Ques es una lista)
+    ((eq? 1 Fila) (getF2 (getC1 Board)))                            ;Recursion de cola
+    ((eq? 2 Fila) (getF3 (getC1 Board)))
+    ((eq? 3 Fila) (getF4 (getC1 Board)))
+    ((eq? 4 Fila) (getF5 (getC1 Board)))
+    ((eq? 5 Fila) (getF6 (getC1 Board)))
     (else "Columna inexistente")
     )
    )
@@ -155,8 +155,8 @@
                                                                                 ;Funcion que busca la posicion libre mas baja en la columna para colocar el TDA Piece
 (define (buscar-posicion-en-columna column contador)                            ;Dominio columna (list) y contador (int)
   (cond                                                                         ;Recorrido int (contador)
-    ((and (not (null? column)) (eq? contador 1) (not(eq? (car column) 0))) (print "Columna llena"))
-    ((and (null? column) (eq? contador 1)) 7 )                                  
+    ((and (not (null? column)) (eq? contador 0) (not(eq? (car column) 0))) (print "Columna llena"))
+    ((and (null? column) (eq? contador 0)) 6 )                                  
     ((and (eq? (car column) 0) (not (eq? (car (cdr column)) 0))) contador )  
     (else (buscar-posicion-en-columna (cdr column) (+ contador 1)))
     )
@@ -166,7 +166,7 @@
 
 (define (colocar-piece column piece posicion posicion-act)                                          ;Recursion de cola
   (cond                                                                                             ;Funcion que coloca un TDA piece en una columna en la posicion dada
-    ((and (null? column) (eq? posicion-act 1)) (list 0 0 0 0 0 (car piece)))                              ;Dominio Columna (list), piece (TDA piece), posicion (int), posicion-act (int)
+    ((and (null? column) (eq? posicion-act 0)) (list 0 0 0 0 0 (car piece)))                              ;Dominio Columna (list), piece (TDA piece), posicion (int), posicion-act (int)
     ((and (eq? posicion posicion-act) (null? (cdr column))) (car piece))                                  ;recorrido list (Columna)
     ((and (eq? posicion posicion-act) (not (null? (cdr column)))) (cons (car piece) (cdr column)))        
     (else  (cons (car column) (colocar-piece (cdr column) piece posicion (+ posicion-act 1))))
@@ -183,7 +183,7 @@
 
 (define (colocar-columna-en-tablero column board posicion posicion-act)                                                      
   (cond                                                                                                                      
-    ((and (eq? posicion posicion-act) (null? (cdr board)) (eq? posicion-act 7)) column)                                                           
+    ((and (eq? posicion posicion-act) (null? (cdr board)) (eq? posicion-act 6)) column)                                                           
     ((and (eq? posicion posicion-act) (not (null? (cdr board)))) (cons column (cdr board)))                      
     (else (cons (car board) (colocar-columna-en-tablero column (cdr board) posicion (+ posicion-act 1))))
     )
@@ -193,39 +193,59 @@
 ;Dominio: TDA Board
 ;Recorrido: Una lista con las diagonales (lista de listas)
 ;Recursion natural
+;Apoyo de chatgpt para la construccion de esta funcion
 
 (define (diagonales Board)
   (define (extraer-diagonal i j delta-i delta-j)                                                  ;delta- y delta-j son para direccionar el loop
-    (define (loop i j acum)                                                                       ;Funcion que crea un loop para generar una diagonal hasta llegar al limite del board 
+    (define (extraer-diagonalaux i j acum)                                                                       ;Funcion que crea un loop para generar una diagonal hasta llegar al limite del board 
       (if (or (< i 0) (>= i (length Board))(< j 0) (>= j (length (list-ref Board i))))   
-          (reverse acum)                                                                          ;Funcion neutra que invierte una lista vacia para no generar cambios en las diagonales  
-          (loop (+ i delta-i) (+ j delta-j) (cons (list-ref (list-ref Board i) j) acum))          ;Llamada recursiva que crea la diagonal.
+          (reverse acum)                                                                          
+          (extraer-diagonalaux (+ i delta-i) (+ j delta-j) (cons (list-ref (list-ref Board i) j) acum))          ;Llamada recursiva que crea la diagonal.
           )
       )
-    (loop i j '())
+    (extraer-diagonalaux i j '())
     )
 
   (define (diagonales-en-direccion delta-i delta-j)                                                ;Funcion Diagonales-en-dirrecion funcion cascaron para tener disponibles los datos de dirrecion de las diagonales
-    (define (diagonales-desde j)                                                                   ;Funcion Diagonales-desde 
-      (define (loop2 i j acum2)                                                                    ;Funcion que crea un loop para recorrer el Board en todas las posiciones posibles
+    (define (diagonales-desde j)                                                                   ;Funcion Diagonales-desde funcion que recorre todas las diagonales a partir de una la posicion de una fila 
+      (define (diagonalesaux i j acum2)                                                                    ;Funcion que crea un loop para recorrer el Board en todas las posiciones posibles
         (if (or (< i 0) (>= i (length Board))(< j 0) (>= j (length (list-ref Board i))))
             (reverse acum2)                                                                        
-            (loop2 (+ i delta-i) (+ j delta-j)(cons (extraer-diagonal i j delta-i delta-j) acum2))
+            (diagonalesaux (+ i delta-i) (+ j delta-j)(cons (extraer-diagonal i j delta-i delta-j) acum2))
             )
         )
-      (loop2 0 j '()))
-    (apply append (map diagonales-desde (range (length (car Board))))))                            ;Funcion apply, utilizada para unir en una sola lista los elementos (diagonales que son listas) de listas generadas por el loop
-
+      (diagonalesaux 0 j '())
+      )
+    (apply append (map diagonales-desde (range (length (car Board)))))                            ;Funcion apply, utilizada para unir en una sola lista los elementos (diagonales que son listas) de listas generadas por el loop
+    )
+  
   (define todas-diagonales                   ; Funcion que une todas las diagonales obtenidas
     (append (diagonales-en-direccion 1 -1)  ; Abajo-izquierda
             (diagonales-en-direccion 1 1)   ; Abajo-derecha
             (diagonales-en-direccion -1 -1)  ; Arriba-izquierda
-            (diagonales-en-direccion -1 1)))  ; Arriba-derecha
+            (diagonales-en-direccion -1 1))  ; Arriba-derecha
+    )
 
-  (filter (lambda (d) (>= (length d) 4)) todas-diagonales)) ;Filtra y entrega todas las diagonales que tienen un tamaño mayor o igual a 4
+  (filter (lambda (d) (>= (length d) 4)) todas-diagonales) ;Filtra y entrega todas las diagonales que tienen un tamaño mayor o igual a 4
+  )
 
+;----------------------------------------------------------------------------------------------------------------------------:
 
+(define (rC columna)                                                              ;Funcion que verifica que sea una lista vacia
+    (cond                                                                         ;Dominio: lista
+      ((eq? '() columna) (list 0 0 0 0 0 0))                                      ;Recorrido: lista
+      (else columna)                                      
+      )
+    )
 
+(provide rellenarColumna)
+
+(define (rellenarColumna board)                                                        ;Funcion que une las columnas rellenadas
+  (cond                                                                                ;Dominio: TDA Board 
+    ((null? (cdr board)) (cons (rC (car board)) null))                                 ;Recorrido: TDA Board
+    (else (cons (rC (car board)) (rellenarColumna (cdr board))))                       ;Recursion natural
+    )
+  )
 
 ;----------------------------------------------------------------------------------------------------------------------------;
 ;-----------------------------------------------Funcion Board-can-play-------------------------------------------------------;
@@ -254,8 +274,8 @@
 
 (define (board-set-play-piece board column piece)
   (if (board-can-play? board)
-      (if (number?(buscar-posicion-en-columna (buscar-getC column board) 1))
-          (colocar-columna-en-tablero (colocar-piece (buscar-getC column board) piece (buscar-posicion-en-columna (buscar-getC column board) 1) 1) board column 1)
+      (if (number?(buscar-posicion-en-columna (buscar-getC column board) 0))
+          (colocar-columna-en-tablero (colocar-piece (buscar-getC column board) piece (buscar-posicion-en-columna (buscar-getC column board) 0) 0) board column 0)
           (display " No hay mas jugadas posibles en la columna"))
       (display "No hay mas jugadas posibles en la columna")
       )
@@ -267,20 +287,20 @@
 (provide repetido4)
 
 (define (repetido4 columna)
-  
-  (define (repetido4aux columna act)                                     ;Funcion repetido4aux es una funcion auxiliar
-    (cond                                                            ;Dominio: una lista y un string
-      ((null? (cdr columna)) 1)                                          ;Recorrido: un int
-      ((eq? (car columna) act) (+ 1 (repetido4aux (cdr columna) act)))       ;Recursion natural
-      (else 0)                                                       ;Funcion que verifica si en una columna existe un dato distinto de 0 que se repita consecutivamente por lo menos 4 veces 
+                                                                            ;Apoyo de chatgpt para la construccion de esta funcion
+  (define (repetido4aux columna act)                                        ;Funcion repetido4aux es una funcion auxiliar
+    (cond                                                                   ;Dominio: una lista y un string
+      ((null? (cdr columna)) 1)                                             ;Recorrido: un int
+      ((eq? (car columna) act) (+ 1 (repetido4aux (cdr columna) act)))      ;Recursion natural
+      (else 0)                                                              ;Funcion que verifica si en una columna existe un dato distinto de 0 que se repita consecutivamente por lo menos 4 veces 
       )
     )
 
-  (if (null? columna)                                                    ;Funcion repetido4
-      0                                                              ;Dominio: una lista
-      (if (eq? (car columna) 0)                                          ;Recorrido: string o un int (0)
-          (repetido4 (cdr columna))                                      ;Recursion de cola
-          (if (>= (repetido4aux columna (car columna)) 4)                    ;Funcion que verifica que se haya repetido 4 veces por lo menos el primer elemento de la lista hasta que solo un elemento en la lista
+  (if (null? columna)                                                       ;Funcion repetido4
+      0                                                                     ;Dominio: una lista
+      (if (eq? (car columna) 0)                                             ;Recorrido: string o un int (0)
+          (repetido4 (cdr columna))                                         ;Recursion de cola
+          (if (>= (repetido4aux columna (car columna)) 4)                   ;Funcion que verifica que se haya repetido 4 veces por lo menos el primer elemento de la lista hasta que solo un elemento en la lista
               (car columna)
               (repetido4 (cdr columna)))
           )
@@ -312,7 +332,7 @@
 
 (define (crearFilas board cont)                                                        ;Funcion que une las filas creadas
   (cond                                                                                ;Dominio: TDA Board y un Int
-    ((eq? cont 7) null)                                                                ;Recorrido TDA Board, pero hecho con las filas
+    ((eq? cont 6) null)                                                                ;Recorrido TDA Board, pero hecho con las filas
     (else (cons (F board cont) (crearFilas board (+ cont 1))))                         ;Recursion natural
     )
   )
@@ -320,7 +340,7 @@
 (provide board-check-horizontal-win)
 
 (define (board-check-horizontal-win board)
-  (define board2 (crearFilas board 1))
+  (define board2 (crearFilas board 0))
  (cond                                                                  ;Dominio: un TDA board
     ((null? board2) 0)                                                  ;Recorrido: un string o un int (0)
     ((string? (repetido4 (getC1 board2))) (repetido4 (car board2)))     ;Recursion de cola para recorrer tablero, recursion natural pata verificar que existan 4 piezas iguales consecutivamente
@@ -333,17 +353,25 @@
 ;----------------------------------------------Funcion Board-check-diagonal-win----------------------------------------------;
 (provide board-check-diagonal-win)
 
-(define (board-check-diagonal-win board)                      ;Funcion que verifica que hay una pieza que se repita por lo menis 4 veces
-  (define (check-diagonales diagonales )                      ;Dominio:TDA board
-    (if (null? diagonales)                                    ;Recorrido: string(temp) 
-        (0)                                                   ;Recursion de cola
-        (if (string? (repetido4 (car diagonales)))            
-            (repetido4 (car diagonales))
-            (check-diagonales (cdr diagonales))
+;Funcion que verifica que hay una pieza que se repita por lo menis 4 veces
+;Dominio:TDA board
+;Recorrido: string(temp)
+;Recursion de cola
+
+
+(define (board-check-diagonal-win board)
+  
+  (define (check-aux Diagonales)
+    (if (null? Diagonales)                                     
+        0                                                     
+        (if (string? (repetido4 (car Diagonales)))            
+            (repetido4 (car Diagonales))
+            (check-aux (cdr Diagonales))
             )
         )
     )
-  (check-diagonales board)
+  
+  (check-aux (diagonales (rellenarColumna board)))
   )
   
 
@@ -360,7 +388,7 @@
           (board-check-horizontal-win board)
           (if (not (eq? (board-check-diagonal-win board) 0))
               (board-check-diagonal-win board)
-              (0)
+              0
               )
           )
       )

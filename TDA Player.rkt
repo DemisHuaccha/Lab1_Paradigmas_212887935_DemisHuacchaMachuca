@@ -1,8 +1,5 @@
 #lang racket
 
-(require "TDA-Board.rkt")
-(require "TDA-Piece.rkt")
-(require "TDA-Game.rkt")
 
 ;----------------------------------------------------------------------------------------------------------------------------;
 ;-----------------------------------------------------Funcion constructora---------------------------------------------------;
@@ -29,7 +26,8 @@
 (define (getNamePlayer player)                                       ;funcion get para el segundo elemento del TDA player
   (if (null? player)                                                 ;Dominio es una lista
       (print "Error: Lista Vacia")                                   ;Recorrido es un string (name)
-      (car (cdr player)))                                            
+      (car (cdr player))
+      )                                            
   )                                                                  
 
 (provide getColorPlayer)
@@ -37,7 +35,8 @@
 (define (getColorPlayer player)                                      ;funcion get para el tercer elemento del TDA player
   (if (null? player)                                                 ;Dominio es una lista
       (print "Error: Lista Vacia")                                   ;Recorrido es un string (color)
-      (car (cdr (cdr player))))                                      
+      (list (car (cdr (cdr player))))
+      )                                      
   )                                                                  
 
 (provide getWinsPlayer)
@@ -72,52 +71,82 @@
       (car (cdr (cdr (cdr (cdr (cdr (cdr player))))))))              
   )
 
+(provide disminuir-piezas)
+
+(define (disminuir-piezas player)                                     ;Funcion que disminuye las piezas del jugador
+  (if (null? (cdr player))                                            ;Dominio: TDA Player
+      (cons (- (car player) 1) null)                                  ;Recorrido: TDA Player
+      (cons (car player) (disminuir-piezas (cdr player)))             ;Recursion natural
+      )
+)
+
+(provide null-piezas?)
+
+(define (null-piezas? player)                                 ;Funcion que verifica si al jugador le quedan piezas
+  (if (eq? (getRemainingPiecesPlayer player) 0)               ;Dominio: TDA Player
+      #t                                                      ;Recorrido: Booleano (#t y #f)
+      #f                                                      
+      )
+  )
+
+
+
 
 ;----------------------------------------------------------------------------------------;
 ;------------------------------ Funcion player-update-stas ------------------------------;
 
-(define (actualizar-wins player)
-  (define (loop player cont)
-    (if (eq? cont 4)
-        (cons (+ (car player) 1) (cdr player))
-        (cons (car player) (loop (cdr player) (+ cont 1)))
+
+
+(provide actualizar-wins) 
+ 
+(define (actualizar-wins player)                                      ;Funcion que actualiza las victorias del jugador
+  (define (aux player cont)                                           ;Dominio: TDA Player
+    (if (eq? cont 4)                                                  ;Recorrido: TDA Player
+        (cons (+ (car player) 1) (cdr player))                        ;Recursion natural
+        (cons (car player) (aux (cdr player) (+ cont 1)))
         )
     )
-  (loop player 1)
+  (aux player 1)
   )
 
-(define (actualizar-losses player)
-  (define (loop player cont)
-    (if (eq? cont 5)
-        (cons (+ (car player) 1) (cdr player))
-        (cons (car player) (loop (cdr player) (+ cont 1)))
+(provide actualizar-losses)
+
+(define (actualizar-losses player)                                 ;Funcion que actualiza las victorias del jugador
+  (define (aux player cont)                                        ;Dominio: TDA Player
+    (if (eq? cont 5)                                               ;Recorrido: TDA Player
+        (cons (+ (car player) 1) (cdr player))                     ;Recursion natural
+        (cons (car player) (aux (cdr player) (+ cont 1)))
         )
     )
-  (loop player 1)
+  (aux player 1)
   )
 
-(define (actualizar-draws player)
- (define (loop player cont)
-    (if (eq? cont 6)
-        (cons (+ (car player) 1) (cdr player))
-        (cons (car player) (loop (cdr player) (+ cont 1)))
+(provide actualizar-draws)
+
+(define (actualizar-draws player)                                   ;Funcion que actualiza las empates del jugador
+ (define (aux player cont)                                          ;Dominio: TDA Player
+    (if (eq? cont 6)                                                ;Recorrido: TDA Player
+        (cons (+ (car player) 1) (cdr player))                      ;Recursion natural
+        (cons (car player) (aux (cdr player) (+ cont 1)))
         )
     )
-  (loop player 1)
+  (aux player 1)
   )
 
 (provide player-update-stats)
 
-(define (player-update-stats player result)
-  (if (eq? result "win")
-      (actualizar-wins player)
-      (if (eq? result "loss")
+(define (player-update-stats player result)                        ;Funcion que actualiza las estadisticas del jugador
+                                                                   ;Dominio: TDA Player y un String
+  (if (equal? result "win")                                        ;Recorrido: TDA Player
+      (actualizar-wins player)                                     ;Recursion no aplica
+      (if (equal? result "loss")
           (actualizar-losses player)
-          (actualizar-draws player)
+          (if (equal? result "draws")
+              (actualizar-draws player)
+              player
+              )
           )
       )
   )
 
 ;----------------------------------------------------------------------------------------;
-
-
