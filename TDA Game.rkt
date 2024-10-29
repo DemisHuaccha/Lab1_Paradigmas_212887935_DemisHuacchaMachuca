@@ -8,10 +8,9 @@
 (provide game)
 
  ;             "TDA P"    "TDA P"  "TDA B"    "INT"             ;Funcion constructora del TDA Game
-(define (game  player1    player2   board   current-turn)       ;Dominio: 2 TDA-Player, 1 TDA-Board y 1 int
-  (list player1 player2 board current-turn)                     ;Recorrido: 1 lista que contiene los elementos de entrada
+(define (game  player1    player2   board   current-turn)       ;Dominio: 2 TDA-Player, 1 TDA-Board, 1 int y 1 lista que es game-history
+  (list player1 player2 board current-turn '())                 ;Recorrido: 1 lista que contiene los elementos de entrada
   )                                                             ;No aplica recursion
-
 
 
 ;--------------------------------------------------------------------;
@@ -37,9 +36,37 @@
 
 (provide getGameCurrentTurn)
 
-(define (getGameCurrentTurn game)                               ;Fincion get de current turn
+(define (getGameCurrentTurn game)                               ;Funcion get de current turn
   (car (cdr (cdr (cdr game))))                                  ;Dominio: TDA Game
   )                                                             ;Recorrido: Un Int
+
+
+;----------------------------------------------------------------------------------------;
+;--------------------------------- Funcion game-history ---------------------------------;
+
+
+;Funcion game-history
+;Dominio: TDA Game
+;Recorrido: una lista game-history
+
+(provide game-history)
+
+(define (game-history game)
+  (car (cdr (cdr (cdr (cdr game)))))
+  )
+
+;Funcion game-historyaux
+;Dominio: TDA Game , columna (int), color (string)
+;Recorrido: una lista game-history
+
+(provide game-historyaux)
+
+(define (game-historyaux gamehistory columna color)
+  (cond
+    ((null? gamehistory) (cons (cons columna color) null))
+    (else (cons (car gamehistory) (game-historyaux (cdr gamehistory) columna color)))
+    )
+  )
 
 ;----------------------------------------------------------------------------------;
 ;------------------------------ Funcion game-is-draw ------------------------------;
@@ -90,15 +117,19 @@
 ;----------------------------------------------------------------------------------------;
 ;--------------------------------- Funcion game-set-end ---------------------------------;
 
+;Funcion que finaliza el juego y actualiza las estadisticas de los jugadores dentro del juego
+;Dominio: TDA Game
+;Recorrido: TDA Game
+
 (provide game-set-end)
 
 (define (game-set-end game)
   
   (if (eq? (board-who-is-winner (gamegetboard game)) (car (getColorPlayer (getGamePlayer1 game))))
-      (list  (player-update-stats (getGamePlayer1 game) "win") (player-update-stats (getGamePlayer2 game) "loss") (gamegetboard game) (getGameCurrentTurn game))
+      (list  (player-update-stats (getGamePlayer1 game) "win") (player-update-stats (getGamePlayer2 game) "loss") (gamegetboard game) (getGameCurrentTurn game)(game-history game))
       (if (eq? (board-who-is-winner (gamegetboard game)) (car (getColorPlayer (getGamePlayer2 game))))
-          (list  (player-update-stats (getGamePlayer1 game) "loss") (player-update-stats (getGamePlayer2 game) "win") (gamegetboard game) (getGameCurrentTurn game))
-          (list  (player-update-stats (getGamePlayer1 game) "draws") (player-update-stats (getGamePlayer2 game) "draws") (gamegetboard game) (getGameCurrentTurn game))
+          (list  (player-update-stats (getGamePlayer1 game) "loss") (player-update-stats (getGamePlayer2 game) "win") (gamegetboard game) (getGameCurrentTurn game) (game-history game) )
+          (list  (player-update-stats (getGamePlayer1 game) "draws") (player-update-stats (getGamePlayer2 game) "draws") (gamegetboard game) (getGameCurrentTurn game) (game-history game) )
           )
       )
   )
@@ -127,8 +158,8 @@
       (if (null-piezas? player)
           (display "Juegador sin piezas")
           (if (eq? (getIdPlayer (getGamePlayer1 game)) (getIdPlayer player)) 
-              (comprobacion (cons (disminuir-piezas (getGamePlayer1 game)) (cons (getGamePlayer2 game) (cons (board-set-play-piece (gamegetboard game) column (getColorPlayer player)) (cons (getIdPlayer (getGamePlayer2 game)) null)))))
-              (comprobacion (cons (getGamePlayer1 game) (cons (disminuir-piezas (getGamePlayer2 game)) (cons (board-set-play-piece (gamegetboard game) column (getColorPlayer player)) (cons (getIdPlayer (getGamePlayer1 game)) null)))))
+              (comprobacion (list (disminuir-piezas (getGamePlayer1 game)) (getGamePlayer2 game) (board-set-play-piece (gamegetboard game) column (getColorPlayer player)) (getIdPlayer (getGamePlayer2 game)) (game-historyaux (game-history game) column (getColorPlayer player)) ))
+              (comprobacion (list (getGamePlayer1 game) (disminuir-piezas (getGamePlayer2 game)) (board-set-play-piece (gamegetboard game) column (getColorPlayer player)) (getIdPlayer (getGamePlayer1 game)) (game-historyaux (game-history game) column (getColorPlayer player)) ))
               )
           )
       )
