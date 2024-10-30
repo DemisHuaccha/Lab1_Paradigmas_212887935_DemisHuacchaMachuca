@@ -1,7 +1,7 @@
 #lang racket
 
-(require "TDA-Piece_21.288793-5_DemisHuacchaMachuca.rkt")
-(require "TDA-Player_21.288793-5_DemisHuacchaMachuca.rkt")
+(require "TDA-Piece_21288793_HuacchaMachuca.rkt")
+(require "TDA-Player_21288793_HuacchaMachuca.rkt")
 
 ; Ejemplos para probar las funciones 
 ;(define red-piece (piece "red"))
