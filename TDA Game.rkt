@@ -1,9 +1,9 @@
 #lang racket
 
 
-(require "TDA-Piece.rkt")
-(require "TDA-Player.rkt")
-(require "TDA-Board.rkt")
+(require "TDA-Piece_21.288793-5_DemisHuacchaMachuca.rkt")
+(require "TDA-Player_21.288793-5_DemisHuacchaMachuca.rkt")
+(require "TDA-Board_21.288793-5_DemisHuacchaMachuca.rkt")
 
 (provide game)
 
